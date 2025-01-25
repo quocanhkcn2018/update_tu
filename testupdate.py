@@ -20,15 +20,15 @@ def check_for_updates():
             print("Có phiên bản mới. Đang tải về...")
             # Tải file về
             response = requests.get(latest_download_url)
-            with open("new_version.zip", "wb") as f:
-                f.write(response.content)
+            # with open("new_version.zip", "wb") as f:
+            #     f.write(response.content)
 
-            # Giải nén và cài đặt (phần này tùy thuộc vào cấu trúc của phần mềm)
-            # ...
+            # # Giải nén và cài đặt (phần này tùy thuộc vào cấu trúc của phần mềm)
+            # # ...
 
-            # Cập nhật phiên bản hiện tại
-            with open("version.txt", "w") as f:
-                f.write(latest_version)
+            # # Cập nhật phiên bản hiện tại
+            # with open("version.txt", "w") as f:
+            #     f.write(latest_version)
 
             print("Cập nhật thành công!")
         else:

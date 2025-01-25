@@ -16,12 +16,12 @@ def check_for_updates():
         # Lấy phiên bản hiện tại (bạn có thể lưu trữ trong một file cấu hình)
         current_version = 1  # Ví dụ
         print("last version " + str(latest_version))
-        if int(latest_version) > (current_version):
+        if int(latest_version) > int(current_version):
             print("Có phiên bản mới. Đang tải về...")
             # Tải file về
             response = requests.get(latest_download_url)
-            # with open("new_version.zip", "wb") as f:
-            #     f.write(response.content)
+            with open("new_version.zip", "wb") as f:
+                f.write(response.content)
 
             # # Giải nén và cài đặt (phần này tùy thuộc vào cấu trúc của phần mềm)
             # # ...
@@ -30,7 +30,7 @@ def check_for_updates():
             # with open("version.txt", "w") as f:
             #     f.write(latest_version)
 
-            print("Cập nhật thành công!")
+            print("Cập nhật thành công! ")
         else:
             print("Bạn đang sử dụng phiên bản mới nhất.")
     except requests.exceptions.RequestException as e:

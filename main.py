@@ -79,7 +79,7 @@ def check_for_updates():
             # with open("version.txt", "w") as f:
             #     f.write(latest_version)
 
-            print_debug("ĐÃ TẢI XONG, VUI LÒNG GIẢI NÉN FILE \n new_version.zip")
+            print_debug("ĐÃ TẢI XONG, VUI LÒNG \n TẮT TOOL \n GIẢI NÉN FILE, GHI ĐÈ \n new_version.zip")
         else:
             print_debug("Bạn đang sử dụng phiên bản mới nhất.")
     except requests.exceptions.RequestException as e:
@@ -567,7 +567,7 @@ checkbutton2 = tk.Checkbutton(window, text="SỔ TAY", variable=var2)
 button_start = tk.Button(window, text="Start", command=start_thread)
 button_stop = tk.Button(window, text="Quit", command=QUIT)
 button_capnhat = tk.Button(window, text="Cập Nhật", command=start_thread_update)
-label = tk.Label(window, text="Thông tin chạy acc", font=("Arial", 12))
+label = tk.Label(window, text="Phần mềm phiên bản số 1", font=("Arial", 12))
 label.place(x=50, y=180)
 label_debug = tk.Label(window, text="debug tool", font=("Arial", 12))
 label_debug.place(x=50, y=210)

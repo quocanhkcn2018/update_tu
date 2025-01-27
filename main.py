@@ -11,6 +11,8 @@ import sys
 import ctypes
 import threading
 import tkinter as tk
+import requests
+import json
 
 def print_debug(data):
     global label_debug
@@ -29,8 +31,59 @@ def is_screen_black():
         return False
 
   # Trả về True nếu giá trị trung bình gần bằng 0 (màu đen)
+def update_version(file_path, new_version):
+  """
+  Hàm cập nhật phiên bản trong file JSON.
 
+  Args:
+    file_path: Đường dẫn đến file JSON.
+    new_version: Phiên bản mới cần cập nhật.
+  """
+
+  # Đọc dữ liệu từ file JSON
+  with open(file_path, 'r') as f:
+    data = json.load(f)
+
+  # Cập nhật giá trị của key "version"
+  data["version"] = new_version
+
+  # Ghi dữ liệu đã cập nhật vào file
+  with open(file_path, 'w') as f:
+    json.dump(data, f, indent=4)
 # Hàm để đảo lộn thứ tự các phần tử trong mảng
+def check_for_updates():
+    # URL đến file JSON chứa thông tin phiên bản mới nhất
+    url = "https://github.com/quocanhkcn2018/update_tu/raw/main/version.json"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for error HTTP status codes
+        data = response.json()
+        latest_version = data['version']
+        latest_download_url = data['download_url']
+
+        # Lấy phiên bản hiện tại (bạn có thể lưu trữ trong một file cấu hình)
+        current_version = 1  # Ví dụ
+        print("last version " + str(latest_version))
+        if int(latest_version) > int(current_version):
+            print_debug("Đang tải về tool........................")
+            # Tải file về
+            response = requests.get(latest_download_url)
+            with open("new_version.zip", "wb") as f:
+                f.write(response.content)
+
+            # # Giải nén và cài đặt (phần này tùy thuộc vào cấu trúc của phần mềm)
+            # # ...
+
+            # # Cập nhật phiên bản hiện tại
+            # with open("version.txt", "w") as f:
+            #     f.write(latest_version)
+
+            print_debug("ĐÃ TẢI XONG, VUI LÒNG GIẢI NÉN FILE \n new_version.zip")
+        else:
+            print_debug("Bạn đang sử dụng phiên bản mới nhất.")
+    except requests.exceptions.RequestException as e:
+        print(f"Lỗi khi kiểm tra cập nhật: {e}")
 def shuffle_array(array):
 # Duyệt qua các phần tử trong mảng
     for i in range(len(array)):
@@ -492,6 +545,9 @@ def start_thread():
     stop_flag = False
     thread = threading.Thread(target=chay_tool)
     thread.start()
+def start_thread_update():
+    thread = threading.Thread(target=check_for_updates)
+    thread.start()
 def stop_thread():
     global stop_flag
     stop_flag = True
@@ -502,21 +558,23 @@ def QUIT():
         window.quit()
 window = tk.Tk()
 window.title("Tool treo acc dùng thử")
-window.geometry("300x200")
+window.geometry("400x300")
 
 var1 = tk.IntVar()
 var2 = tk.IntVar()
 checkbutton1 = tk.Checkbutton(window, text="SVIP", variable=var1)
 checkbutton2 = tk.Checkbutton(window, text="SỔ TAY", variable=var2)
 button_start = tk.Button(window, text="Start", command=start_thread)
-button_stop = tk.Button(window, text="QUIT", command=QUIT)
+button_stop = tk.Button(window, text="Quit", command=QUIT)
+button_capnhat = tk.Button(window, text="Cập Nhật", command=start_thread_update)
 label = tk.Label(window, text="Thông tin chạy acc", font=("Arial", 12))
-label.place(x=10, y=120)
+label.place(x=50, y=180)
 label_debug = tk.Label(window, text="debug tool", font=("Arial", 12))
-label_debug.place(x=10, y=150)
+label_debug.place(x=50, y=210)
 
 checkbutton1.pack()
 checkbutton2.pack()
 button_start.pack(pady=5)
-button_stop.pack()
+button_stop.pack(pady=5)
+button_capnhat.pack()
 window.mainloop()

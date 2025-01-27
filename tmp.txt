@@ -1,4 +1,1 @@
-
-Image Name                     PID Session Name        Session#    Mem Usage
-========================= ======== ================ =========== ============
-jusched.exe                  13872 Console                    7     15,748 K
+quoc anh

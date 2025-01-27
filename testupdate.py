@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import patoolib as patool
 
 def check_for_updates():
     # URL đến file JSON chứa thông tin phiên bản mới nhất
@@ -35,6 +36,19 @@ def check_for_updates():
             print("Bạn đang sử dụng phiên bản mới nhất.")
     except requests.exceptions.RequestException as e:
         print(f"Lỗi khi kiểm tra cập nhật: {e}")
+def extract_rar_with_patool(rar_file, extract_path, overwrite=True):
+  """
+  Hàm giải nén file RAR bằng patool và ghi đè các file trùng lặp.
+
+  Args:
+    rar_file: Đường dẫn đến file RAR.
+    extract_path: Đường dẫn đến thư mục giải nén.
+    overwrite: Nếu True, ghi đè các file trùng lặp. Mặc định là True.
+  """
+
+  patool.extract_archive(rar_file, extract_path)
 
 if __name__ == "__main__":
-    check_for_updates()
+    rar_file = "main.rar"
+    extract_path = "."
+    extract_rar_with_patool(rar_file, extract_path)

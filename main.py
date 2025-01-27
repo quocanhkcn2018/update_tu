@@ -1,5 +1,3 @@
-from xlrd import open_workbook
-
 import os
 import datetime
 from time import sleep, time
@@ -11,7 +9,12 @@ import array as arr
 import random
 import sys
 import ctypes
+import threading
+import tkinter as tk
 
+def print_debug(data):
+    global label_debug
+    label_debug.config(text=f"{data}\n")
 def is_screen_black():
 
     screenshot = pyautogui.screenshot()
@@ -20,7 +23,7 @@ def is_screen_black():
 
 # Kiểm tra xem tất cả các pixel có phải là màu đen không
     if cv2.countNonZero(screenshot) == 0:
-        print("Màn hình đang bị đen toàn bộ.")
+        print_debug("Màn hình đang bị đen toàn bộ.")
         return True
     else:
         return False
@@ -85,7 +88,7 @@ def checkacctime():
 # Đọc số trong tệp
             number = int(f.read())
 # In số ra màn hình
-            print("Số trong tệp index.txt là:", number)
+            print_debug("Số trong tệp index.txt là:"+ str(number))
             f.close()
             return number
     except FileNotFoundError:
@@ -150,7 +153,7 @@ def closefo4():
     os.system ("taskkill /f /im xm.exe")   
     
      
-    print("Thoát hết các task ")
+    print_debug("Thoát hết các task ")
     sleep(5)
     os.system ("taskkill /f /im garena.exe") 
     sleep(5)
@@ -171,7 +174,7 @@ def doctkmk(stt):
 
 def click(tenhinh,type,solanclick):
     if tenhinh=='ok'or tenhinh =='okvien' or tenhinh=='warning':
-        print()
+        print_debug("")
     else:
         screen = pyautogui.screenshot()
     # Lưu lại thành tên screen.png
@@ -199,27 +202,30 @@ def click(tenhinh,type,solanclick):
 # Lấy tọa độ góc dưới bên phải của hình chữ nhật
         bottom_right = (top_left[0] + w, top_left[1] + h)
 # Lấy tọa độ điểm chính giữa của hình chữ nhật
-        print(str(type))
+        print_debug(str(type))
         center = (top_left[0] + w // 2, top_left[1]+int(type) + h // 2 )
         
         if int(solanclick)==100:
-            print('')
+            print_debug('')
         else:
             pyautogui.moveTo(center,duration=0.25)
             if str(tenhinh)=='so8'or str(tenhinh)=='so81':
                 pyautogui.click(center,None,int(solanclick),1)
             else:
                 pyautogui.click(center,None,int(solanclick),0.3)
-        print('tim duoc roi '+ str(tenhinh))
+        print_debug('tim duoc roi '+ str(tenhinh))
         return 1
     else:
 # In ra thông báo không tìm thấy hình ảnh nhỏ
-        print('')
+        print_debug('')
         return 0
 
 def dangnhapaccmoi(stt):
-    print("Đăng nhập số thứ tự " + str(stt))
-    # click('tamdungauto',0,1)
+    print_debug("Đăng nhập số thứ tự " + str(stt))
+    while not click('ffzik',0,1):
+        print_debug("chua tim thay hinh ffzik")
+        sleep(1)
+    click('tamdungauto',0,1)
     if "garena.exe" not in (p.name() for p in psutil.process_iter()):
         os.startfile("C:\Program Files (x86)\Garena\Garena\Garena.exe")
         sleep(7)
@@ -254,151 +260,263 @@ def isrespondingPID():
         tmp = open('tmp.txt', 'r')
         a = tmp.readlines()
         tmp.close()
-        print(a[-1].split()[0])
+        print_debug(a[-1].split()[0])
         if a[-1].split()[0] == 'fczf.exe' :
-            print('FO4 NOT RESPONDING .... OFF NOWW')
+            print_debug('FO4 NOT RESPONDING .... OFF NOWW')
             return True
         else:
             return False
 
-start_time90 = time()
-start_time_backup = time()
-sothutu = checkacctime()
-sothututam=-1
-biendem=0
-biendem1=0
-thoigianchay1acc=0
-thoigianchaybackup=0
-dathaypass2=0
-max = 125
-demdangnhap=0
-khoataikhoan=0
-while (True):
-    now=  datetime.datetime.now()
-    time1= now.strftime("%H:%M:%S %d/%m/%Y")
-    print(time1)
-    try:
-        end_time = time()
-        sothutu = checkacctime()
-        print("so thu tu tam"+ str(sothutu))
-        if sothututam==100:
-            now1 = datetime.datetime.now()
-            dathaypass2 = 0
-            print(now1)
-            print("trả về số thứ tự acc là " + str(sothutu))
-            sothututam=sothutu 
-            closefo4()
-            demdangnhap = demdangnhap + 1
-            if demdangnhap>=2:
+
+def chay_tool():
+    global var1,var2
+    global label
+    start_time90 = time()
+    start_time_backup = time()
+    sothutu = checkacctime()
+    sothututam=-1
+    biendem=0
+    biendem1=0
+    thoigianchay1acc=0
+    thoigianchaybackup=0
+    dathaypass2=0
+    max = 10
+    demdangnhap=0
+    khoataikhoan=0
+
+    count = 0
+    thoigianvaogame = f"Thời Gian vào game: {count}"
+    thongtin = f"Debug tool: {count}"
+    while not stop_flag:
+        now=  datetime.datetime.now()
+        time1= now.strftime("%H:%M:%S %d/%m/%Y")
+        print_debug(time1)
+        
+        try:
+            end_time = time()
+            sothutu = checkacctime()
+            print_debug("so thu tu tam"+ str(sothutu))
+            if sothututam==100:
+                now1 = datetime.datetime.now()
+                dathaypass2 = 0
+                print_debug(now1)
+                print_debug("trả về số thứ tự acc là " + str(sothutu))
+                sothututam=sothutu 
+                closefo4()
+                demdangnhap = demdangnhap + 1
+                if demdangnhap>=2:
+                    sothutu = sothutu +1
+                    if sothutu==11:
+                        sothutu=0
+                    with open("index.txt", "w") as f:
+# Ghi số 1 vào tệp
+                        f.write(str(sothutu))
+                        f.close()
+                else:
+                    sleep(5)
+                    dangnhapaccmoi(sothututam)
+
+            if sothutu!=sothututam:
+                dathaypass2 = 0
+                demdangnhap=0
+                now1 = datetime.datetime.now()
+                print_debug(now1)
+                print_debug("trả về số thứ tự acc là " + str(sothutu))
+                start_time90= time()
+                sothututam=sothutu
+                closefo4()
+                sleep(5)
+                if not dangnhapaccmoi(sothututam):
+                    sothutu = 0
+                    with open("index.txt", "w") as f:
+# Ghi số 1 vào tệp
+                        f.write(str(sothutu))
+                        f.close()
+            if isrespondingPID():
+                biendem=biendem+1
+                if biendem>30:
+                    print_debug(" 2 phút rồi fo4 not responding")
+                    sothututam=100
+                    biendem = 0
+
+            if click('loimoi',0,1):
+                sothututam=100
+        # if 'xcoronahost.xem' in (p.name() for p in psutil.process_iter()):
+            # if click('fconline',0,1):
+                # os.system ("taskkill /f /im xcoronahost.xem")
+            if 'chrome.exe' in (p.name() for p in psutil.process_iter()):
+                if click('khoataikhoan',0,1):
+                    sys.exit("You exited the program")
+                os.system ("taskkill /f /im chrome.exe")
+            if 'msedge.exe' in (p.name() for p in psutil.process_iter()):
+                if click('khoataikhoan',0,1):
+                    sys.exit("You exited the program")
+                os.system ("taskkill /f /im msedge.exe")         
+
+
+            if (thoigianchay1acc)>(max) or thoigianchaybackup>133:
+                thoigianchay1acc = 0
+                thoigianchaybackup = 0
                 sothutu = sothutu +1
                 if sothutu==11:
                     sothutu=0
                 with open("index.txt", "w") as f:
 # Ghi số 1 vào tệp
                     f.write(str(sothutu))
-                    f.close()
-            else:
-                sleep(5)
-                dangnhapaccmoi(sothututam)
-
-        if sothutu!=sothututam:
-            dathaypass2 = 0
-            demdangnhap=0
-            now1 = datetime.datetime.now()
-            print(now1)
-            print("trả về số thứ tự acc là " + str(sothutu))
-            start_time90= time()
-            sothututam=sothutu
-            closefo4()
-            sleep(5)
-            if not dangnhapaccmoi(sothututam):
-                sothutu = 0
-                with open("index.txt", "w") as f:
-# Ghi số 1 vào tệp
-                    f.write(str(sothutu))
-                    f.close()
-        if isrespondingPID():
-            biendem=biendem+1
-            if biendem>30:
-                print(" 2 phút rồi fo4 not responding")
-                sothututam=100
-                biendem = 0
-
-        if click('loimoi',0,1):
-            sothututam=100
-        # if 'xcoronahost.xem' in (p.name() for p in psutil.process_iter()):
-            # if click('fconline',0,1):
-                # os.system ("taskkill /f /im xcoronahost.xem")
-        if 'chrome.exe' in (p.name() for p in psutil.process_iter()):
-            if click('khoataikhoan',0,1):
-                sys.exit("You exited the program")
-            os.system ("taskkill /f /im chrome.exe")
-        if 'msedge.exe' in (p.name() for p in psutil.process_iter()):
-            if click('khoataikhoan',0,1):
-                sys.exit("You exited the program")
-            os.system ("taskkill /f /im msedge.exe")         
-
-
-        if (thoigianchay1acc)>(max) or thoigianchaybackup>133:
-            thoigianchay1acc = 0
-            thoigianchaybackup = 0
-            sothutu = sothutu +1
-            if sothutu==11:
-                sothutu=0
-            with open("index.txt", "w") as f:
-# Ghi số 1 vào tệp
-                f.write(str(sothutu))
-                f.close()      
-        if click('warning',0,1) :
-            sothututam=100
-            
-
-
-
-
-        if 'fczf.exe' not in (p.name() for p in psutil.process_iter()):
-            biendem1=biendem1+1
-            if biendem1>30:
-                print(" 2 phút rồi không thấy fo4 chạy....")
-                sothututam=100
-                biendem1=0
-        else:
-
-            if click('iconfo4',0,100) or click('iconfo41',0,100):
-                if click('mksai1lan',0,1) or click('mksai2lan',0,1) or click('mksai3lan',0,1) or click('mksai4lan',0,1) :
-                    sys.exit("You exited the program")
-                print(" fo4 is runing..... ")
-                start_time_backup=time()
-                timedachaybackup= (int(start_time_backup)-int(end_time)+2)/int(60)
-                thoigianchaybackup =thoigianchaybackup + timedachaybackup
-           
-                
-                print(" Acc so thu tu: " + str(sothutu) + " TIME BACKUP " + str(thoigianchaybackup) + " phut ")    
-                biendem1=0
-                
-            else:
+                    f.close()      
+            if click('warning',0,1) :
+                sothututam=100        
+            if 'fczf.exe' not in (p.name() for p in psutil.process_iter()):
                 biendem1=biendem1+1
                 if biendem1>30:
-                    print(" 2 phút rồi không thấy fo4 chạy....")
+                    print_debug(" 2 phút rồi không thấy fo4 chạy....")
                     sothututam=100
                     biendem1=0
-                # click('dagialap',0,1)
-        if dathaypass2:
-            start_time90=time()
-            timedachay= (int(start_time90)-int(end_time)+2)/int(60)
-            thoigianchay1acc =thoigianchay1acc + timedachay
-            print(" Acc so thu tu: " + str(sothutu) + " Da chay duoc " + str(thoigianchay1acc) + " phut ")
-        else:
-            if click('so8',0,10) or click('so81',0,10)  :
-                start_time90=time()
-                dathaypass2=1
-                click('xacnhanpass2',0,1)
-        sleep(2)
-    except Exception as e:
-        print(e)
-        with open("errror.txt", "w") as f:
-# Ghi số 1 vào tệp
-            f.write(str(e))
-            f.close() 
-        os.system("starttool.bat")
+            else:
 
+                if click('iconfo4',0,100) or click('iconfo41',0,100):
+                    if click('mksai1lan',0,1) or click('mksai2lan',0,1) or click('mksai3lan',0,1) or click('mksai4lan',0,1) :
+                        sys.exit("You exited the program")
+                    print_debug(" fo4 is runing..... ")
+                    start_time_backup=time()
+                    timedachaybackup= (int(start_time_backup)-int(end_time)+2)/int(60)
+                    thoigianchaybackup =thoigianchaybackup + timedachaybackup
+                    
+                
+                    print_debug(" Acc so thu tu: " + str(sothutu) + " TIME BACKUP " + str(thoigianchaybackup) + " phut ")    
+                    biendem1=0
+                
+                else:
+                    biendem1=biendem1+1
+                    if biendem1>30:
+                        print_debug(" 2 phút rồi không thấy fo4 chạy....")
+                        sothututam=100
+                        biendem1=0
+                # click('dagialap',0,1)
+            if dathaypass2:
+                start_time90=time()
+                timedachay= (int(start_time90)-int(end_time)+2)/int(60)
+                thoigianchay1acc =thoigianchay1acc + timedachay
+                print_debug(" Acc so thu tu: " + str(sothutu) + " Da chay duoc " + str(round(thoigianchay1acc, 2)) + " phut ")
+                thoigianvaogame = f"Thời Gian: {str(round(thoigianchay1acc, 2))}" + "phút ... Acc thứ " + str(sothutu)
+                label.config(text=f"{thoigianvaogame}\n")
+            else:
+                if click('so8',0,10) or click('so81',0,10)  :
+                    start_time90=time()
+                    dathaypass2=1
+                    click('xacnhanpass2',0,1)
+                    if var1.get()==1 or var2.get()==1:
+                        while not click('tieptucpass2',0,1):
+                            print_debug("chua tim thay hinh tiep tuc pass 2")
+                            sleep(1)
+                        while not click('doixh',0,1):
+                            print_debug("chua tim thay hinh doixh")
+                            sleep(1)
+                    if var2.get()==1:
+                        while not click('shop',0,1):
+                            print_debug("chua tim thay hinh shop")
+                            sleep(1)
+                        while not click('sotay',0,1):
+                            print_debug("chua tim thay hinh sotay")
+                            sleep(1)
+                        sleep(3)
+                        if click('iconsotay',0,1):
+                            sleep(5)
+                            click('muasotay',0,1)
+                            sleep(5)   
+                            click('muasotay',0,1)
+                            sleep(5)
+                            click('muasotay1',0,1)
+                            click('xacnhansaumua',0,1)
+                        while not click('sukien',0,1):
+                            print_debug("chua tim thay hinh sukien")
+                            sleep(1)
+                        sleep(3)
+                        click('nhantatcasukien',0,1)
+                        while not click('sotaysvipt1',0,1):
+                            print_debug("chua tim thay hinh sotaysvipt1")
+                            sleep(1)
+                        sleep(3)
+                        click('nhantatcasvipt1',0,1)
+                        while not click('sotayvipt1',0,1):
+                            print_debug("chua tim thay hinh sotayvipt1")
+                            sleep(1)
+                        sleep(3)
+                        click('nhantatcasvipt1',0,1)
+                    if var1.get()==1:
+                        if click('kiemtrasvip',0,1):
+                            print_debug("da co svip roi")
+                        else:
+                            while not click('vatpham',0,1):
+                                print_debug("chua tim thay hinh vatpham")
+                                sleep(1)
+                            while not click('vatpham',0,1):
+                                print_debug("chua tim thay hinh vatpham")
+                                sleep(1)
+                            while not click('nhantatcavatpham',0,1):
+                                print_debug("chua tim thay hinh nhantatcavatpham")
+                                sleep(1)
+                            while not click('nhantatcavatpham1',0,1):
+                                print_debug("chua tim thay hinh nhantatcavatpham")
+                                sleep(1)
+                            while not click('svip',0,1):
+                                print_debug("chua tim thay hinh svip")
+                                sleep(1)
+                            while not click('nhansvip',0,1):
+                                print_debug("chua tim thay hinh nhansvip")
+                                sleep(1)
+                            while not click('dongsvip',0,1):
+                                print_debug("chua tim thay hinh nhantatcavatpham")
+                                sleep(1)
+                            
+                    while not click('ffzik',0,1):
+                            print_debug("chua tim thay hinh ffzik")
+                            sleep(1)
+                    while not click('dagialap',0,1):
+                            print_debug("chua tim thay hinh dagialap")
+                            sleep(1)
+                    
+
+                        
+
+            sleep(2)
+        except Exception as e:
+            print_debug(e)
+            with open("errror.txt", "w") as f:
+# Ghi số 1 vào tệp
+                f.write(str(e))
+                f.close() 
+            os.system("starttool.bat")
+def start_thread():
+    global stop_flag
+    stop_flag = False
+    thread = threading.Thread(target=chay_tool)
+    thread.start()
+def stop_thread():
+    global stop_flag
+    stop_flag = True
+def QUIT():
+    window.quit()
+    while 'main.exe' in (p.name() for p in psutil.process_iter()):
+        os.system ("taskkill /im main.exe")
+        window.quit()
+window = tk.Tk()
+window.title("Tool treo acc dùng thử")
+window.geometry("300x200")
+
+var1 = tk.IntVar()
+var2 = tk.IntVar()
+checkbutton1 = tk.Checkbutton(window, text="SVIP", variable=var1)
+checkbutton2 = tk.Checkbutton(window, text="SỔ TAY", variable=var2)
+button_start = tk.Button(window, text="Start", command=start_thread)
+button_stop = tk.Button(window, text="QUIT", command=QUIT)
+label = tk.Label(window, text="Thông tin chạy acc", font=("Arial", 12))
+label.place(x=10, y=120)
+label_debug = tk.Label(window, text="debug tool", font=("Arial", 12))
+label_debug.place(x=10, y=150)
+
+checkbutton1.pack()
+checkbutton2.pack()
+button_start.pack(pady=5)
+button_stop.pack()
+window.mainloop()

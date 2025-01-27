@@ -275,7 +275,7 @@ def click(tenhinh,type,solanclick):
 
 def dangnhapaccmoi(stt):
     print_debug("Đăng nhập số thứ tự " + str(stt))
-    while not click('ffzik',0,1):
+    while not click('ffzik',0,1) or not click('iconffzik',0,1): 
         print_debug("chua tim thay hinh ffzik")
         sleep(1)
     click('tamdungauto',0,1)
@@ -333,10 +333,10 @@ def chay_tool():
     thoigianchay1acc=0
     thoigianchaybackup=0
     dathaypass2=0
-    max = 10
+    max = 125
     demdangnhap=0
     khoataikhoan=0
-
+    timsvip = 0
     count = 0
     thoigianvaogame = f"Thời Gian vào game: {count}"
     thongtin = f"Debug tool: {count}"
@@ -514,15 +514,21 @@ def chay_tool():
                                 sleep(1)
                             while not click('svip',0,1):
                                 print_debug("chua tim thay hinh svip")
+                                timsvip = timsvip + 1
+                                if timsvip>30:
+                                    break
                                 sleep(1)
-                            while not click('nhansvip',0,1):
-                                print_debug("chua tim thay hinh nhansvip")
-                                sleep(1)
-                            while not click('dongsvip',0,1):
-                                print_debug("chua tim thay hinh nhantatcavatpham")
-                                sleep(1)
-                            
-                    while not click('ffzik',0,1):
+                            if timsvip>30:
+                                timsvip = 0
+                            else:
+                                while not click('nhansvip',0,1):
+                                    print_debug("chua tim thay hinh nhansvip")
+                                    sleep(1)
+                                while not click('dongsvip',0,1):
+                                    print_debug("chua tim thay hinh nhantatcavatpham")
+                                    sleep(1)
+                                timsvip = 0                            
+                    while not click('ffzik',0,1) or not click('iconffzik',0,1): 
                             print_debug("chua tim thay hinh ffzik")
                             sleep(1)
                     while not click('dagialap',0,1):

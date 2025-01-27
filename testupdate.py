@@ -2,10 +2,18 @@ import requests
 import json
 import os
 import patoolib as patool
+import time
 
 def check_for_updates():
     # URL đến file JSON chứa thông tin phiên bản mới nhất
     url = "https://github.com/quocanhkcn2018/update_tu/raw/main/version.json"
+    timsvip = 0
+    while True:
+        timsvip = timsvip + 1
+        if timsvip == 5:
+            print("Đang kiểm tra cập nhật...")
+            break
+        time.sleep(1)
 
     try:
         response = requests.get(url)
